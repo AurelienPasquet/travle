@@ -1,4 +1,5 @@
-import sys, os, copy, time
+import sys
+from pydot import graph_from_dot_file
 
 dataset = 'countries.csv'
 
@@ -304,9 +305,11 @@ def to_dot(source, paths, png=False, svg=False):
         
 
     if png:
-        os.popen("dot -Tpng graph.dot -o graph.png")
+        (graph,) = graph_from_dot_file("graph.dot")
+        graph.write_png("graph.png")
     if svg:
-        os.popen("dot -Tsvg graph.dot -o graph.svg")
+        (graph,) = graph_from_dot_file("graph.dot")
+        graph.write_svg("graph.svg")
 
 
 def usage():
