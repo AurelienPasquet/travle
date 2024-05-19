@@ -63,7 +63,7 @@ def bfs(graph, source, target):
     minimum = len(path)
 
     paths = get_paths(source, target, parent_map, minimum)
-    return paths if paths[0] else [], minimum
+    return paths if paths else [], minimum
 
 
 def get_paths(source, target, parent_map, minimum):
