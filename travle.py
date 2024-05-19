@@ -34,42 +34,39 @@ def bfs(graph, source, target):
         tuple: A tuple containing the shortest path as a list of nodes and the length of the path as an integer. If no path is found, the path will be None and the length will be -1.
     """
 
-    visited = []
+    visited = set()
     queue = [source]
     current = source
 
-    path_dict = {source: None}
+    parent_map = {source: None}
 
     while current != target:
         
         current = queue.pop(0)
 
-        if current == target:
-            break
-
-        visited.append(current)
+        visited.add(current)
 
         unvisitedNeighbors = [neighbor for neighbor in graph[current] if neighbor not in visited]
 
         for neighbor in unvisitedNeighbors:
             if neighbor not in queue:
                 queue.append(neighbor)
-            if neighbor in path_dict:
-                path_dict[neighbor].append(current)
+            if neighbor in parent_map:
+                parent_map[neighbor].append(current)
             else:
-                path_dict[neighbor] = [current]
+                parent_map[neighbor] = [current]
 
     path = []
     while current != source:
         path.append(current)
-        current = path_dict[current][0]
+        current = parent_map[current][0]
     minimum = len(path)
 
-    paths = get_paths(source, target, path_dict, minimum)
+    paths = get_paths(source, target, parent_map, minimum)
     return paths if paths[0] else [], minimum
 
 
-def get_paths(source, node, path_dict, minimum):
+def get_paths(source, node, parent_map, minimum):
     """
     Retrieve all paths from the given node using the provided path dictionary.
 
@@ -82,12 +79,12 @@ def get_paths(source, node, path_dict, minimum):
     """
 
     paths = []
-    get_paths_aux(paths, [], source, node, path_dict, minimum)
+    get_paths_aux(paths, [], source, node, parent_map, minimum)
     paths.sort()
     return paths
 
 
-def get_paths_aux(paths, path, source, node, path_dict, minimum):
+def get_paths_aux(paths, path, source, node, parent_map, minimum):
     """
     Recursively finds all paths from a given node to its parent nodes in a path dictionary.
 
@@ -104,7 +101,7 @@ def get_paths_aux(paths, path, source, node, path_dict, minimum):
     if len(path) > minimum:
         return
 
-    if path_dict[node] == None:
+    if parent_map[node] == None:
         if len(path) <= minimum:
             minimum = len(path)
             path.reverse()
@@ -113,8 +110,8 @@ def get_paths_aux(paths, path, source, node, path_dict, minimum):
     
     new_path = path.copy()
     new_path.append(node)
-    for parent in path_dict[node]:
-        get_paths_aux(paths, new_path, source, parent, path_dict, minimum)
+    for parent in parent_map[node]:
+        get_paths_aux(paths, new_path, source, parent, parent_map, minimum)
 
 
 def check_adjacency(graph):
