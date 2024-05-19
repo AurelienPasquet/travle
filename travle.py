@@ -66,7 +66,7 @@ def bfs(graph, source, target):
     return paths if paths[0] else [], minimum
 
 
-def get_paths(source, node, parent_map, minimum):
+def get_paths(source, target, parent_map, minimum):
     """
     Retrieve all paths from the given node using the provided path dictionary.
 
@@ -79,7 +79,7 @@ def get_paths(source, node, parent_map, minimum):
     """
 
     paths = []
-    get_paths_aux(paths, [], source, node, parent_map, minimum)
+    get_paths_aux(paths, [], source, target, parent_map, minimum)
     paths.sort()
     return paths
 
