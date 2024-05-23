@@ -374,6 +374,34 @@ def basic(argv):
     to_dot(source, paths, png=True, svg=True)
 
 
+def get_remaining_paths(paths, guesses):
+    remaining_paths = []
+    for path in paths:
+        path_set = set(path)
+        if guesses.issubset(path_set):
+            remaining_paths.append(path)
+    return remaining_paths
+
+
+def print_incomplete_path(path, guesses):
+    gap = False
+    for i in range(0, len(path)):
+        if path[i] in guesses:
+            print(f"{path[i]}", end='')
+            if i < len(path) - 1:
+                print(" -> ", end='')
+            gap = False
+        else:
+            if gap:
+                continue
+            else:
+                print("...", end='')
+                if i < len(path) - 1:
+                    print(" -> ", end='')
+                gap = True
+    print()
+
+
 def game():
     max_mistakes = 3
     nb_mistakes = 0
@@ -388,6 +416,7 @@ def game():
     check_graph(countries, source, target)
 
     paths, _ = bfs(countries, source, target)
+    remaining_paths = paths.copy()
 
     for path in paths:
         path.pop(-1)
@@ -400,8 +429,8 @@ def game():
     while nb_mistakes < max_mistakes:
         guess = input("Enter country name: ")
         guesses.add(guess)
-        print(guesses)
         
+        # Target reached
         for path in paths:
             if len(path) == len(guesses):
                 if set(path) == guesses:
@@ -409,18 +438,30 @@ def game():
                     print(f"{target} reached with {nb_mistakes} mistakes")
                     return
 
+        if guess == source:
+            print(f"{guess} is the source target")
+
+        if guess == target:
+            print(f"{guess} is the target country")
+
+        # Right guess
         subset_flag = False
         for path in paths:
             if guesses.issubset(path):
                 subset_flag = True
+                remaining_paths = get_remaining_paths(remaining_paths, guesses)
+                print_incomplete_path(remaining_paths[0], guesses)
                 break
         
+        # Wrong guess
         if not subset_flag:
             nb_mistakes += 1
             print(f"{guess.replace('_', ' ')} is not on one of the optimal paths")
             print(f"{nb_mistakes}/{max_mistakes} mistakes")
             mistakes.add(guess)
             guesses.remove(guess)
+        
+        print()
 
     print("Game over!")
 
