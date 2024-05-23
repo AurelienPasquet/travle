@@ -240,6 +240,12 @@ def print_path(source, path):
     print()
 
 
+def print_paths(source, target, paths):
+    print(f"\n{source} to {target}: {len(paths)} path{'s' if len(paths) != 1 else ''} of length {len(paths[0])}")
+    for path in paths:
+        print_path(source, path + [target])
+
+
 def to_subgraph(source, paths, underscores=False):
     """
     Convert a list of paths into a subgraph representation.
@@ -385,20 +391,23 @@ def get_remaining_paths(paths, guesses):
 
 def print_incomplete_path(path, guesses):
     gap = False
+
     for i in range(0, len(path)):
         if path[i] in guesses:
-            print(f"{path[i]}", end='')
-            if i < len(path) - 1:
+            if gap:
                 print(" -> ", end='')
+            print(f"{path[i]}", end='')
             gap = False
+
         else:
             if gap:
                 continue
             else:
                 print("...", end='')
-                if i < len(path) - 1:
-                    print(" -> ", end='')
                 gap = True
+
+        if not gap and i < len(path) - 1:
+                print(" -> ", end='')
     print()
 
 
@@ -422,7 +431,6 @@ def game():
         path.pop(-1)
 
     guesses = set()
-    mistakes = set()
 
     print(f"Find the shortest path from {source} to {target}")
 
@@ -458,12 +466,14 @@ def game():
             nb_mistakes += 1
             print(f"{guess.replace('_', ' ')} is not on one of the optimal paths")
             print(f"{nb_mistakes}/{max_mistakes} mistakes")
-            mistakes.add(guess)
             guesses.remove(guess)
+
+            if nb_mistakes == max_mistakes:
+                print("Game over!")
+                print_paths(source, target, remaining_paths)
         
         print()
 
-    print("Game over!")
 
 if __name__ == "__main__":
     #basic(sys.argv[1:])
