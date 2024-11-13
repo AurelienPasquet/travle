@@ -5,8 +5,10 @@ from pydot import graph_from_dot_file
 import random
 
 DATASET = 'countries.csv'
-GRAPHS_PATH = "graphs/"
 
+GRAPHS_PATH = "graphs/"
+if not os.path.exists(GRAPHS_PATH):
+    os.mkdir(GRAPHS_PATH)
 
 def parse(file_name):
     """
